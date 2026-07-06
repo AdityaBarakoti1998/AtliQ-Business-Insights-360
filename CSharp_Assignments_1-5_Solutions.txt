@@ -1,0 +1,812 @@
+C# Assignments 1–5 — Complete Solutions
+
+---
+
+Assignment 1
+
+1. Area of Circle
+
+using System;
+
+class AreaOfCircle
+{
+    static void Main()
+    {
+        Console.Write("Enter radius: ");
+        double radius = Convert.ToDouble(Console.ReadLine());
+
+        double pi = 3.14;
+        double area = pi * radius * radius;
+
+        Console.WriteLine("Area of circle = " + area);
+    }
+}
+
+
+Sample Output:
+
+Enter radius: 5
+Area of circle = 78.5
+
+
+2. Category of Height (using if)
+
+using System;
+
+class HeightCategory
+{
+    static void Main()
+    {
+        Console.Write("Enter height in inches: ");
+        double inches = Convert.ToDouble(Console.ReadLine());
+
+        double cm = inches * 2.54;
+
+        if (cm < 150)
+        {
+            Console.WriteLine("Category: Short");
+        }
+        else if (cm >= 150 && cm <= 170)
+        {
+            Console.WriteLine("Category: Average");
+        }
+        else if (cm > 170 && cm <= 185)
+        {
+            Console.WriteLine("Category: Tall");
+        }
+        else
+        {
+            Console.WriteLine("Category: Very Tall");
+        }
+    }
+}
+
+
+Sample Output:
+
+Enter height in inches: 68
+Category: Tall
+
+(68 inches = 172.72 cm)
+
+3. Nearest Thousands of Given Integer
+
+using System;
+
+class NearestThousand
+{
+    static void Main()
+    {
+        Console.Write("Enter number: ");
+        int number = Convert.ToInt32(Console.ReadLine());
+
+        int nearestThousand = (int)(Math.Round(number / 1000.0) * 1000);
+
+        Console.WriteLine("Nearest thousand = " + nearestThousand);
+    }
+}
+
+
+Sample Output:
+
+Enter number: 4567
+Nearest thousand = 5000
+
+
+4. Convert Seconds into Years, Days, Hours, Minutes, Seconds (no if / no loop)
+
+using System;
+
+class SecondsConverter
+{
+    static void Main()
+    {
+        Console.Write("Enter number of seconds: ");
+        long totalSeconds = Convert.ToInt64(Console.ReadLine());
+
+        long secondsInYear = 365L * 24 * 60 * 60;
+        long secondsInDay = 24L * 60 * 60;
+        long secondsInHour = 60L * 60;
+        long secondsInMinute = 60L;
+
+        long years = totalSeconds / secondsInYear;
+        long remainder = totalSeconds % secondsInYear;
+
+        long days = remainder / secondsInDay;
+        remainder = remainder % secondsInDay;
+
+        long hours = remainder / secondsInHour;
+        remainder = remainder % secondsInHour;
+
+        long minutes = remainder / secondsInMinute;
+        long seconds = remainder % secondsInMinute;
+
+        Console.WriteLine("Years   : " + years);
+        Console.WriteLine("Days    : " + days);
+        Console.WriteLine("Hours   : " + hours);
+        Console.WriteLine("Minutes : " + minutes);
+        Console.WriteLine("Seconds : " + seconds);
+    }
+}
+
+
+Sample Output:
+
+Enter number of seconds: 100000000
+Years   : 3
+Days    : 61
+Hours   : 21
+Minutes : 46
+Seconds : 40
+
+
+---
+
+Assignment 2
+
+1. Medical Bot "Bob" — Prescribes Medication Based on Symptoms and Age
+
+using System;
+
+class MedicalBot
+{
+    static string Prescribe(string symptom, int age)
+    {
+        string medicine;
+
+        switch (symptom.ToLower())
+        {
+            case "fever":
+                medicine = age < 12 ? "Paracetamol Syrup (Child dose)" : "Paracetamol 500mg";
+                break;
+            case "cold":
+                medicine = age < 12 ? "Cetirizine Syrup (Child dose)" : "Cetirizine 10mg";
+                break;
+            case "headache":
+                medicine = age < 12 ? "Consult a pediatrician" : "Ibuprofen 400mg";
+                break;
+            case "cough":
+                medicine = "Cough Syrup - Dextromethorphan";
+                break;
+            default:
+                medicine = "Symptom not recognized. Please consult a doctor.";
+                break;
+        }
+
+        return medicine;
+    }
+
+    static void Main()
+    {
+        Console.WriteLine("Hi, I am Bob, your medical assistant bot.");
+        Console.Write("Enter patient's symptom (fever/cold/headache/cough): ");
+        string symptom = Console.ReadLine();
+
+        Console.Write("Enter patient's age: ");
+        int age = Convert.ToInt32(Console.ReadLine());
+
+        string prescription = Prescribe(symptom, age);
+        Console.WriteLine("Bob prescribes: " + prescription);
+    }
+}
+
+
+Sample Output:
+
+Hi, I am Bob, your medical assistant bot.
+Enter patient's symptom (fever/cold/headache/cough): fever
+Enter patient's age: 8
+Bob prescribes: Paracetamol Syrup (Child dose)
+
+
+2. Type Conversion Examples
+
+using System;
+
+class TypeConversionDemo
+{
+    static void Main()
+    {
+        // Implicit conversion (int -> double)
+        int intValue = 100;
+        double doubleValue = intValue;
+        Console.WriteLine("Implicit int to double: " + doubleValue);
+
+        // Explicit conversion (double -> int)
+        double d = 25.75;
+        int i = (int)d;
+        Console.WriteLine("Explicit double to int: " + i);
+
+        // string to int using Convert
+        string numString = "150";
+        int convertedInt = Convert.ToInt32(numString);
+        Console.WriteLine("String to int: " + convertedInt);
+
+        // int to string
+        int num = 500;
+        string strNum = num.ToString();
+        Console.WriteLine("Int to string: " + strNum);
+
+        // string to double using Parse
+        string decimalString = "45.67";
+        double parsedDouble = double.Parse(decimalString);
+        Console.WriteLine("String to double: " + parsedDouble);
+
+        // bool to string
+        bool flag = true;
+        Console.WriteLine("Bool to string: " + flag.ToString());
+    }
+}
+
+
+Sample Output:
+
+Implicit int to double: 100
+Explicit double to int: 25
+String to int: 150
+Int to string: 500
+String to double: 45.67
+Bool to string: True
+
+
+---
+
+Assignment 3
+
+1. Question Class for a Quiz Application
+
+using System;
+using System.Collections.Generic;
+
+class Question
+{
+    public string QuestionText { get; set; }
+    public List<string> Options { get; set; }
+    public char CorrectOption { get; set; }
+
+    public Question(string questionText, List<string> options, char correctOption)
+    {
+        QuestionText = questionText;
+        Options = options;
+        CorrectOption = correctOption;
+    }
+
+    public void Display()
+    {
+        Console.WriteLine(QuestionText);
+        char label = 'A';
+        foreach (string option in Options)
+        {
+            Console.WriteLine(label + ". " + option);
+            label++;
+        }
+    }
+
+    public bool CheckAnswer(char userAnswer)
+    {
+        return char.ToUpper(userAnswer) == char.ToUpper(CorrectOption);
+    }
+}
+
+class QuizApp
+{
+    static void Main()
+    {
+        List<Question> quiz = new List<Question>
+        {
+            new Question("Capital of India?",
+                new List<string> { "Mumbai", "Delhi", "Chennai", "Kolkata" }, 'B'),
+            new Question("2 + 2 = ?",
+                new List<string> { "3", "4", "5" }, 'B'),
+            new Question("C# was developed by?",
+                new List<string> { "Microsoft", "Google" }, 'A')
+        };
+
+        int score = 0;
+        foreach (Question q in quiz)
+        {
+            q.Display();
+            Console.Write("Your answer: ");
+            char ans = Convert.ToChar(Console.ReadLine());
+
+            if (q.CheckAnswer(ans))
+            {
+                Console.WriteLine("Correct!\n");
+                score++;
+            }
+            else
+            {
+                Console.WriteLine("Wrong! Correct answer: " + q.CorrectOption + "\n");
+            }
+        }
+
+        Console.WriteLine("Final Score: " + score + "/" + quiz.Count);
+    }
+}
+
+
+Sample Output:
+
+Capital of India?
+A. Mumbai
+B. Delhi
+C. Chennai
+D. Kolkata
+Your answer: B
+Correct!
+
+2 + 2 = ?
+A. 3
+B. 4
+C. 5
+Your answer: B
+Correct!
+
+C# was developed by?
+A. Microsoft
+B. Google
+Your answer: A
+Correct!
+
+Final Score: 3/3
+
+
+2. Interfaces Demo — College / University Library
+
+using System;
+using System.Collections.Generic;
+
+interface IBorrowable
+{
+    void Borrow(string memberName);
+    void Return(string memberName);
+}
+
+class Book : IBorrowable
+{
+    public string Title { get; set; }
+    public bool IsAvailable { get; set; } = true;
+
+    public Book(string title)
+    {
+        Title = title;
+    }
+
+    public void Borrow(string memberName)
+    {
+        if (IsAvailable)
+        {
+            IsAvailable = false;
+            Console.WriteLine(memberName + " borrowed \"" + Title + "\"");
+        }
+        else
+        {
+            Console.WriteLine("\"" + Title + "\" is currently unavailable.");
+        }
+    }
+
+    public void Return(string memberName)
+    {
+        IsAvailable = true;
+        Console.WriteLine(memberName + " returned \"" + Title + "\"");
+    }
+}
+
+class Library
+{
+    static void Main()
+    {
+        List<Book> books = new List<Book>
+        {
+            new Book("C# Programming"),
+            new Book("Data Structures"),
+            new Book("Operating Systems")
+        };
+
+        books[0].Borrow("Aditya");
+        books[0].Borrow("Rahul");
+        books[0].Return("Aditya");
+        books[0].Borrow("Rahul");
+    }
+}
+
+
+Sample Output:
+
+Aditya borrowed "C# Programming"
+"C# Programming" is currently unavailable.
+Aditya returned "C# Programming"
+Rahul borrowed "C# Programming"
+
+
+3. Pin Property with Validation Logic
+
+using System;
+
+class PinValidator
+{
+    private int pin;
+
+    public int Pin
+    {
+        get { return pin; }
+        set
+        {
+            if (value.ToString().Length == 4 && value >= 1000 && value <= 9999)
+            {
+                pin = value;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid PIN. PIN must be a 4-digit number (1000-9999).");
+            }
+        }
+    }
+}
+
+class PinDemo
+{
+    static void Main()
+    {
+        PinValidator validator = new PinValidator();
+
+        try
+        {
+            validator.Pin = 4521;
+            Console.WriteLine("PIN set successfully: " + validator.Pin);
+
+            validator.Pin = 12; // invalid
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+        }
+    }
+}
+
+
+Sample Output:
+
+PIN set successfully: 4521
+Error: Invalid PIN. PIN must be a 4-digit number (1000-9999).
+
+
+---
+
+Assignment 4
+
+1. Car Rental Program
+
+using System;
+using System.Collections.Generic;
+
+class Car
+{
+    public string Make { get; set; }
+    public string Model { get; set; }
+    public double RentalPrice { get; set; }
+    public bool IsAvailable { get; set; }
+
+    public Car(string make, string model, double rentalPrice, bool isAvailable)
+    {
+        Make = make;
+        Model = model;
+        RentalPrice = rentalPrice;
+        IsAvailable = isAvailable;
+    }
+
+    public void Display()
+    {
+        Console.WriteLine(Make + " " + Model + " | Price/day: Rs." + RentalPrice +
+            " | Available: " + (IsAvailable ? "Yes" : "No"));
+    }
+}
+
+class RentalAgency
+{
+    private List<Car> cars = new List<Car>();
+
+    public void AddCar(Car car) => cars.Add(car);
+
+    public void ShowCars()
+    {
+        foreach (Car c in cars)
+            c.Display();
+    }
+
+    public void RentCar(string model)
+    {
+        Car car = cars.Find(c => c.Model == model);
+        if (car != null && car.IsAvailable)
+        {
+            car.IsAvailable = false;
+            Console.WriteLine(model + " has been rented out.");
+        }
+        else
+        {
+            Console.WriteLine(model + " is not available for rent.");
+        }
+    }
+}
+
+class CarRentalDemo
+{
+    static void Main()
+    {
+        RentalAgency agency = new RentalAgency();
+        agency.AddCar(new Car("Maruti", "Swift", 1500, true));
+        agency.AddCar(new Car("Hyundai", "Creta", 2500, true));
+        agency.AddCar(new Car("Tata", "Nexon", 2000, false));
+
+        Console.WriteLine("Available Cars:");
+        agency.ShowCars();
+
+        Console.WriteLine("\nRenting Swift...");
+        agency.RentCar("Swift");
+
+        Console.WriteLine("\nUpdated List:");
+        agency.ShowCars();
+    }
+}
+
+
+Sample Output:
+
+Available Cars:
+Maruti Swift | Price/day: Rs.1500 | Available: Yes
+Hyundai Creta | Price/day: Rs.2500 | Available: Yes
+Tata Nexon | Price/day: Rs.2000 | Available: No
+
+Renting Swift...
+Swift has been rented out.
+
+Updated List:
+Maruti Swift | Price/day: Rs.1500 | Available: No
+Hyundai Creta | Price/day: Rs.2500 | Available: Yes
+Tata Nexon | Price/day: Rs.2000 | Available: No
+
+
+2. Method to Find Largest Numbers from Multiple Collections
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class LargestFinder
+{
+    static int FindLargest(List<int> numbers)
+    {
+        return numbers.Max();
+    }
+
+    static void Main()
+    {
+        List<List<int>> collections = new List<List<int>>
+        {
+            new List<int> { 12, 45, 67, 23, 89 },
+            new List<int> { 5, 100, 34, 76 },
+            new List<int> { 200, 15, 99 }
+        };
+
+        int index = 1;
+        foreach (List<int> collection in collections)
+        {
+            Console.WriteLine("Collection " + index + " largest number: " + FindLargest(collection));
+            index++;
+        }
+    }
+}
+
+
+Sample Output:
+
+Collection 1 largest number: 89
+Collection 2 largest number: 100
+Collection 3 largest number: 200
+
+
+3. Interfaces and Collections Demo
+
+using System;
+using System.Collections.Generic;
+
+interface IShape
+{
+    double GetArea();
+}
+
+class Circle : IShape
+{
+    public double Radius { get; set; }
+    public Circle(double radius) { Radius = radius; }
+    public double GetArea() => 3.14 * Radius * Radius;
+}
+
+class Rectangle : IShape
+{
+    public double Length { get; set; }
+    public double Width { get; set; }
+    public Rectangle(double length, double width) { Length = length; Width = width; }
+    public double GetArea() => Length * Width;
+}
+
+class ShapeDemo
+{
+    static void Main()
+    {
+        List<IShape> shapes = new List<IShape>
+        {
+            new Circle(5),
+            new Rectangle(4, 6)
+        };
+
+        foreach (IShape shape in shapes)
+        {
+            Console.WriteLine(shape.GetType().Name + " area: " + shape.GetArea());
+        }
+    }
+}
+
+
+Sample Output:
+
+Circle area: 78.5
+Rectangle area: 24
+
+
+---
+
+Assignment 5
+
+1. Student and Course — Basic LINQ Join
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Student
+{
+    public int StudentId { get; set; }
+    public string StudentName { get; set; }
+    public int CourseId { get; set; }
+}
+
+class Course
+{
+    public int CourseId { get; set; }
+    public string CourseName { get; set; }
+}
+
+class StudentCourseJoin
+{
+    static void Main()
+    {
+        List<Student> students = new List<Student>
+        {
+            new Student { StudentId = 1, StudentName = "Aditya", CourseId = 101 },
+            new Student { StudentId = 2, StudentName = "Rahul", CourseId = 102 },
+            new Student { StudentId = 3, StudentName = "Priya", CourseId = 101 }
+        };
+
+        List<Course> courses = new List<Course>
+        {
+            new Course { CourseId = 101, CourseName = "Java Full Stack" },
+            new Course { CourseId = 102, CourseName = "Data Analytics" }
+        };
+
+        var result = from s in students
+                     join c in courses on s.CourseId equals c.CourseId
+                     select new { s.StudentName, c.CourseName };
+
+        foreach (var item in result)
+        {
+            Console.WriteLine(item.StudentName + " -> " + item.CourseName);
+        }
+    }
+}
+
+
+Sample Output:
+
+Aditya -> Java Full Stack
+Rahul -> Data Analytics
+Priya -> Java Full Stack
+
+
+2. Customer, Product, Order, OrderDetail — LINQ Queries
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Customer
+{
+    public int CustomerId { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string City { get; set; }
+}
+
+class Product
+{
+    public int ProductId { get; set; }
+    public string ProductName { get; set; }
+    public double UnitPrice { get; set; }
+}
+
+class Order
+{
+    public int OrderId { get; set; }
+    public int CustomerId { get; set; }
+    public string ShipCity { get; set; }
+}
+
+class OrderDetail
+{
+    public int OrderId { get; set; }
+    public int ProductId { get; set; }
+    public int Quantity { get; set; }
+}
+
+class LinqQueriesDemo
+{
+    static void Main()
+    {
+        List<Customer> customers = new List<Customer>
+        {
+            new Customer { CustomerId = 1, FirstName = "Aditya", LastName = "Barakoti", City = "Hyderabad" },
+            new Customer { CustomerId = 2, FirstName = "Ravi",   LastName = "Kumar",    City = "Bangalore" },
+            new Customer { CustomerId = 3, FirstName = "Sneha",  LastName = "Achanta",  City = "Bangalore" }
+        };
+
+        List<Product> products = new List<Product>
+        {
+            new Product { ProductId = 1, ProductName = "Laptop",  UnitPrice = 55000 },
+            new Product { ProductId = 2, ProductName = "Mouse",   UnitPrice = 500 },
+            new Product { ProductId = 3, ProductName = "Monitor", UnitPrice = 12000 }
+        };
+
+        List<Order> orders = new List<Order>
+        {
+            new Order { OrderId = 1, CustomerId = 2, ShipCity = "Bangalore" },
+            new Order { OrderId = 2, CustomerId = 1, ShipCity = "Hyderabad" },
+            new Order { OrderId = 3, CustomerId = 3, ShipCity = "Bangalore" }
+        };
+
+        // a. Customers in alphabetical order by last name
+        Console.WriteLine("a. Customers ordered by last name:");
+        var customersByLastName = customers.OrderBy(c => c.LastName);
+        foreach (var c in customersByLastName)
+            Console.WriteLine(c.FirstName + " " + c.LastName);
+
+        // b. Products ordered by unit price, highest to lowest
+        Console.WriteLine("\nb. Products ordered by price (high to low):");
+        var productsByPrice = products.OrderByDescending(p => p.UnitPrice);
+        foreach (var p in productsByPrice)
+            Console.WriteLine(p.ProductName + " - Rs." + p.UnitPrice);
+
+        // c. Orders shipped to customers in Bangalore
+        Console.WriteLine("\nc. Orders shipped to Bangalore:");
+        var bangaloreOrders = orders.Where(o => o.ShipCity == "Bangalore");
+        foreach (var o in bangaloreOrders)
+            Console.WriteLine("Order ID: " + o.OrderId);
+    }
+}
+
+
+Sample Output:
+
+a. Customers ordered by last name:
+Sneha Achanta
+Aditya Barakoti
+Ravi Kumar
+
+b. Products ordered by price (high to low):
+Laptop - Rs.55000
+Monitor - Rs.12000
+Mouse - Rs.500
+
+c. Orders shipped to Bangalore:
+Order ID: 1
+Order ID: 3
+

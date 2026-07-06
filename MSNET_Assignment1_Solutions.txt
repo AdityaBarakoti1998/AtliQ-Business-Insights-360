@@ -1,0 +1,521 @@
+MS.NET Assignment - 1 — Complete Solutions
+
+---
+
+1. Hello World Program
+
+using System;
+
+class HelloWorld
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, World!");
+    }
+}
+
+
+Sample Output (Command Prompt):
+
+[See command-prompt screenshot in Word doc]
+
+---
+
+2. Four-Function Calculator (Command Line Arguments + switch)
+
+using System;
+
+class Calculator
+{
+    static void Main(string[] args)
+    {
+        if (args.Length != 3)
+        {
+            Console.WriteLine("Usage: Calculator.exe <num1> <num2> <operator>");
+            Console.WriteLine("Example: Calculator.exe 10 20 +");
+            return;
+        }
+
+        double num1 = Convert.ToDouble(args[0]);
+        double num2 = Convert.ToDouble(args[1]);
+        string op = args[2];
+        double result;
+
+        switch (op)
+        {
+            case "+":
+                result = num1 + num2;
+                break;
+            case "-":
+                result = num1 - num2;
+                break;
+            case "*":
+                result = num1 * num2;
+                break;
+            case "/":
+                if (num2 == 0)
+                {
+                    Console.WriteLine("Error: Division by zero is not allowed.");
+                    return;
+                }
+                result = num1 / num2;
+                break;
+            default:
+                Console.WriteLine("Invalid operator. Use +, -, * or /");
+                return;
+        }
+
+        Console.WriteLine("Result: " + num1 + " " + op + " " + num2 + " = " + result);
+    }
+}
+
+
+How to run with command-line arguments: In Visual Studio, go to Project → Properties → Debug → Command line arguments and enter `10 20 +`, then run (F5). If using the `dotnet` CLI: `dotnet run -- 10 20 +`.
+
+Sample Output (Command Prompt):
+
+[See command-prompt screenshot in Word doc]
+
+---
+
+3. Student Class
+
+using System;
+
+class Student
+{
+    // All data members private
+    private string name;
+    private bool gender;   // true = Male, false = Female
+    private int age;
+    private int std;
+    private char div;
+    private double marks;
+
+    // Default constructor
+    public Student()
+    {
+        name = "Unknown";
+        gender = true;
+        age = 0;
+        std = 0;
+        div = 'A';
+        marks = 0.0;
+    }
+
+    // Parameterized constructor
+    public Student(string name, bool gender, int age, int std, char div, double marks)
+    {
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+        this.std = std;
+        this.div = div;
+        this.marks = marks;
+    }
+
+    // Get and Set methods
+    public string GetName() { return name; }
+    public void SetName(string name) { this.name = name; }
+
+    public bool GetGender() { return gender; }
+    public void SetGender(bool gender) { this.gender = gender; }
+
+    public int GetAge() { return age; }
+    public void SetAge(int age) { this.age = age; }
+
+    public int GetStd() { return std; }
+    public void SetStd(int std) { this.std = std; }
+
+    public char GetDiv() { return div; }
+    public void SetDiv(char div) { this.div = div; }
+
+    public double GetMarks() { return marks; }
+    public void SetMarks(double marks) { this.marks = marks; }
+
+    // Accept details from console
+    public void AcceptDetails()
+    {
+        Console.Write("Enter name: ");
+        name = Console.ReadLine();
+
+        Console.Write("Enter gender (true=Male / false=Female): ");
+        gender = Convert.ToBoolean(Console.ReadLine());
+
+        Console.Write("Enter age: ");
+        age = Convert.ToInt32(Console.ReadLine());
+
+        Console.Write("Enter standard: ");
+        std = Convert.ToInt32(Console.ReadLine());
+
+        Console.Write("Enter division: ");
+        div = Convert.ToChar(Console.ReadLine());
+
+        Console.Write("Enter marks: ");
+        marks = Convert.ToDouble(Console.ReadLine());
+    }
+
+    // Print details to console
+    public void PrintDetails()
+    {
+        Console.WriteLine("\n--- Student Details ---");
+        Console.WriteLine("Name     : " + name);
+        Console.WriteLine("Gender   : " + (gender ? "Male" : "Female"));
+        Console.WriteLine("Age      : " + age);
+        Console.WriteLine("Standard : " + std);
+        Console.WriteLine("Division : " + div);
+        Console.WriteLine("Marks    : " + marks);
+    }
+}
+
+class StudentDemo
+{
+    static void Main()
+    {
+        Student s1 = new Student();
+        s1.AcceptDetails();
+        s1.PrintDetails();
+    }
+}
+
+
+Note: By default, the members of a class are `private` (same as declared here explicitly).
+
+Sample Output (Command Prompt):
+
+[See command-prompt screenshot in Word doc]
+
+---
+
+4. Xyz Company — Salary Processing System
+
+using System;
+using System.Collections.Generic;
+
+class Person
+{
+    protected string name;
+    protected int age;
+
+    public Person() { }
+
+    public Person(string name, int age)
+    {
+        this.name = name;
+        this.age = age;
+    }
+
+    public string GetName() { return name; }
+    public void SetName(string name) { this.name = name; }
+
+    public int GetAge() { return age; }
+    public void SetAge(int age) { this.age = age; }
+
+    public virtual void Accept()
+    {
+        Console.Write("Enter name: ");
+        name = Console.ReadLine();
+        Console.Write("Enter age: ");
+        age = Convert.ToInt32(Console.ReadLine());
+    }
+
+    public virtual void Display()
+    {
+        Console.WriteLine("Name: " + name + " | Age: " + age);
+    }
+}
+
+class Emp : Person
+{
+    protected int id;
+    protected double salary;
+
+    public Emp() { }
+
+    public Emp(string name, int age, int id, double salary) : base(name, age)
+    {
+        this.id = id;
+        this.salary = salary;
+    }
+
+    public int GetId() { return id; }
+    public void SetId(int id) { this.id = id; }
+
+    public double GetSalary() { return salary; }
+    public void SetSalary(double salary) { this.salary = salary; }
+
+    public override void Accept()
+    {
+        base.Accept();
+        Console.Write("Enter employee ID: ");
+        id = Convert.ToInt32(Console.ReadLine());
+        Console.Write("Enter base salary: ");
+        salary = Convert.ToDouble(Console.ReadLine());
+    }
+
+    public override void Display()
+    {
+        base.Display();
+        Console.WriteLine("ID: " + id + " | Base Salary: " + salary);
+    }
+
+    public virtual double CalcSal()
+    {
+        return salary;
+    }
+}
+
+class Labor : Emp
+{
+    private double hours;
+    private double rate;
+
+    public Labor() { }
+
+    public Labor(string name, int age, int id, double hours, double rate) : base(name, age, id, 0)
+    {
+        this.hours = hours;
+        this.rate = rate;
+    }
+
+    public double GetHours() { return hours; }
+    public void SetHours(double hours) { this.hours = hours; }
+
+    public double GetRate() { return rate; }
+    public void SetRate(double rate) { this.rate = rate; }
+
+    public override void Accept()
+    {
+        base.Accept();
+        Console.Write("Enter hours worked: ");
+        hours = Convert.ToDouble(Console.ReadLine());
+        Console.Write("Enter rate per hour: ");
+        rate = Convert.ToDouble(Console.ReadLine());
+    }
+
+    public override void Display()
+    {
+        base.Display();
+        Console.WriteLine("Hours: " + hours + " | Rate: " + rate + " | Salary: " + CalcSal());
+    }
+
+    public override double CalcSal()
+    {
+        return hours * rate;
+    }
+}
+
+class Manager : Emp
+{
+    private double bonus;
+
+    public Manager() { }
+
+    public Manager(string name, int age, int id, double salary, double bonus) : base(name, age, id, salary)
+    {
+        this.bonus = bonus;
+    }
+
+    public double GetBonus() { return bonus; }
+    public void SetBonus(double bonus) { this.bonus = bonus; }
+
+    public override void Accept()
+    {
+        base.Accept();
+        Console.Write("Enter bonus: ");
+        bonus = Convert.ToDouble(Console.ReadLine());
+    }
+
+    public override void Display()
+    {
+        base.Display();
+        Console.WriteLine("Bonus: " + bonus + " | Salary: " + CalcSal());
+    }
+
+    public override double CalcSal()
+    {
+        return salary + bonus;
+    }
+}
+
+class Salesman : Emp
+{
+    private double comm;
+
+    public Salesman() { }
+
+    public Salesman(string name, int age, int id, double salary, double comm) : base(name, age, id, salary)
+    {
+        this.comm = comm;
+    }
+
+    public double GetComm() { return comm; }
+    public void SetComm(double comm) { this.comm = comm; }
+
+    public override void Accept()
+    {
+        base.Accept();
+        Console.Write("Enter commission: ");
+        comm = Convert.ToDouble(Console.ReadLine());
+    }
+
+    public override void Display()
+    {
+        base.Display();
+        Console.WriteLine("Commission: " + comm + " | Salary: " + CalcSal());
+    }
+
+    public override double CalcSal()
+    {
+        return salary + comm;
+    }
+}
+
+class Clerk : Emp
+{
+    public Clerk() { }
+
+    public Clerk(string name, int age, int id, double salary) : base(name, age, id, salary) { }
+
+    public override void Display()
+    {
+        base.Display();
+        Console.WriteLine("Salary: " + CalcSal());
+    }
+
+    public override double CalcSal()
+    {
+        return salary;
+    }
+}
+
+class SalaryProcessingSystem
+{
+    static void Main()
+    {
+        List<Emp> employees = new List<Emp>
+        {
+            new Labor("Ramesh", 30, 101, 160, 100),        // hours * rate
+            new Manager("Suresh", 40, 102, 50000, 8000),   // salary + bonus
+            new Salesman("Anita", 28, 103, 30000, 5000),   // salary + comm
+            new Clerk("Kiran", 25, 104, 20000)              // salary
+        };
+
+        double totalExpense = 0;
+
+        foreach (Emp e in employees)
+        {
+            e.Display();
+            totalExpense += e.CalcSal();
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("Total Salary Expense for all employees: Rs." + totalExpense);
+    }
+}
+
+
+Sample Output (Command Prompt):
+
+[See command-prompt screenshot in Word doc]
+
+---
+
+5. Student Structure
+
+using System;
+
+struct Student
+{
+    // Data members - explicitly private (structs also default to private for fields)
+    private string name;
+    private bool gender;
+    private int age;
+    private int std;
+    private char div;
+    private double marks;
+
+    // Parameterized constructor
+    // Note: C# structs do NOT allow an explicit parameterless constructor before C# 10;
+    // every struct already has an implicit default constructor that zero-initializes all fields.
+    public Student(string name, bool gender, int age, int std, char div, double marks)
+    {
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+        this.std = std;
+        this.div = div;
+        this.marks = marks;
+    }
+
+    // Get and Set methods
+    public string GetName() { return name; }
+    public void SetName(string name) { this.name = name; }
+
+    public bool GetGender() { return gender; }
+    public void SetGender(bool gender) { this.gender = gender; }
+
+    public int GetAge() { return age; }
+    public void SetAge(int age) { this.age = age; }
+
+    public int GetStd() { return std; }
+    public void SetStd(int std) { this.std = std; }
+
+    public char GetDiv() { return div; }
+    public void SetDiv(char div) { this.div = div; }
+
+    public double GetMarks() { return marks; }
+    public void SetMarks(double marks) { this.marks = marks; }
+
+    // Accept details from console
+    public void AcceptDetails()
+    {
+        Console.Write("Enter name: ");
+        name = Console.ReadLine();
+
+        Console.Write("Enter gender (true=Male / false=Female): ");
+        gender = Convert.ToBoolean(Console.ReadLine());
+
+        Console.Write("Enter age: ");
+        age = Convert.ToInt32(Console.ReadLine());
+
+        Console.Write("Enter standard: ");
+        std = Convert.ToInt32(Console.ReadLine());
+
+        Console.Write("Enter division: ");
+        div = Convert.ToChar(Console.ReadLine());
+
+        Console.Write("Enter marks: ");
+        marks = Convert.ToDouble(Console.ReadLine());
+    }
+
+    // Print details to console
+    public void PrintDetails()
+    {
+        Console.WriteLine("\n--- Student (Structure) Details ---");
+        Console.WriteLine("Name     : " + name);
+        Console.WriteLine("Gender   : " + (gender ? "Male" : "Female"));
+        Console.WriteLine("Age      : " + age);
+        Console.WriteLine("Standard : " + std);
+        Console.WriteLine("Division : " + div);
+        Console.WriteLine("Marks    : " + marks);
+    }
+}
+
+class StudentStructDemo
+{
+    static void Main()
+    {
+        // Default constructor - implicit, zero-initializes all fields
+        Student s1 = new Student();
+        s1.AcceptDetails();
+        s1.PrintDetails();
+    }
+}
+
+
+Note on default access specifier: In C#, both class members and structure members default to `private` when no access modifier is specified. This assignment keeps all data members explicitly `private` and all methods `public` as required — the behavior is identical for classes and structs in this respect. The key structural difference is that a `struct` is a value type (copied on assignment) while a `class` is a reference type.
+
+Sample Output (Command Prompt):
+
+[See command-prompt screenshot in Word doc]
