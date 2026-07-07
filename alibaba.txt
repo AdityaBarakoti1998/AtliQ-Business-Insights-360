@@ -1,0 +1,321 @@
+Step 1: Create Project
+ASP.NET Core Web App (Model-View-Controller)
+
+Project Name:
+ProductMVCApp
+Step 2: Install Packages
+
+Tools → NuGet Package Manager → Package Manager Console
+
+Install-Package Microsoft.EntityFrameworkCore
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Step 3: Product Model
+
+Models/Product.cs
+
+using System.ComponentModel.DataAnnotations;
+
+namespace ProductMVCApp.Models
+{
+    public class Product
+    {
+        [Key]
+        public int ProductId { get; set; }
+
+        [Required]
+        public string ProductName { get; set; }
+
+        public string Category { get; set; }
+
+        public decimal Price { get; set; }
+
+        public int Quantity { get; set; }
+    }
+}
+Step 4: ApplicationDbContext
+
+Models/ApplicationDbContext.cs
+
+using Microsoft.EntityFrameworkCore;
+
+namespace ProductMVCApp.Models
+{
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Product> Products { get; set; }
+    }
+}
+Step 5: appsettings.json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=ProductDB;Trusted_Connection=True;"
+  },
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+
+  "AllowedHosts": "*"
+}
+Step 6: Program.cs
+
+Replace complete file with:
+
+using Microsoft.EntityFrameworkCore;
+using ProductMVCApp.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Product}/{action=Index}/{id?}");
+
+app.Run();
+Step 7: Migration
+
+Package Manager Console
+
+Add-Migration InitialCreate
+Update-Database
+Step 8: Product Controller
+
+Controllers/ProductController.cs
+
+using Microsoft.AspNetCore.Mvc;
+using ProductMVCApp.Models;
+
+namespace ProductMVCApp.Controllers
+{
+    public class ProductController : Controller
+    {
+        private readonly ApplicationDbContext db;
+
+        public ProductController(ApplicationDbContext context)
+        {
+            db = context;
+        }
+
+        public IActionResult Index()
+        {
+            return View(db.Products.ToList());
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Product p)
+        {
+            db.Products.Add(p);
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var p = db.Products.Find(id);
+
+            return View(p);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Product p)
+        {
+            db.Products.Update(p);
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var p = db.Products.Find(id);
+
+            db.Products.Remove(p);
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+    }
+}
+Step 9: Create Views Folder
+
+Create:
+
+Views
+ └── Product
+      ├── Index.cshtml
+      ├── Create.cshtml
+      └── Edit.cshtml
+Step 10: Create.cshtml
+@model ProductMVCApp.Models.Product
+
+<h2>Add Product</h2>
+
+<form method="post">
+
+    Product Name
+    <input asp-for="ProductName" />
+
+    <br /><br />
+
+    Category
+    <input asp-for="Category" />
+
+    <br /><br />
+
+    Price
+    <input asp-for="Price" />
+
+    <br /><br />
+
+    Quantity
+    <input asp-for="Quantity" />
+
+    <br /><br />
+
+    <button type="submit">
+        Save
+    </button>
+
+</form>
+Step 11: Edit.cshtml
+@model ProductMVCApp.Models.Product
+
+<h2>Edit Product</h2>
+
+<form method="post">
+
+    <input type="hidden" asp-for="ProductId" />
+
+    Product Name
+    <input asp-for="ProductName" />
+
+    <br /><br />
+
+    Category
+    <input asp-for="Category" />
+
+    <br /><br />
+
+    Price
+    <input asp-for="Price" />
+
+    <br /><br />
+
+    Quantity
+    <input asp-for="Quantity" />
+
+    <br /><br />
+
+    <button type="submit">
+        Update
+    </button>
+
+</form>
+Step 12: Index.cshtml
+@model IEnumerable<ProductMVCApp.Models.Product>
+
+<h2>Product List</h2>
+
+<p>
+    <a asp-action="Create">
+        Add Product
+    </a>
+</p>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Category</th>
+    <th>Price</th>
+    <th>Quantity</th>
+    <th>Action</th>
+</tr>
+
+@foreach(var item in Model)
+{
+<tr>
+
+    <td>@item.ProductId</td>
+    <td>@item.ProductName</td>
+    <td>@item.Category</td>
+    <td>@item.Price</td>
+    <td>@item.Quantity</td>
+
+    <td>
+        <a asp-action="Edit"
+           asp-route-id="@item.ProductId">
+           Edit
+        </a>
+
+        |
+
+        <a asp-action="Delete"
+           asp-route-id="@item.ProductId">
+           Delete
+        </a>
+    </td>
+
+</tr>
+}
+
+</table>
+Exam Writing Order (Most Important)
+1. Create MVC Project
+2. Install EF Packages
+3. Product Model
+4. ApplicationDbContext
+5. Connection String
+6. Program.cs
+7. Add-Migration
+8. Update-Database
+9. ProductController
+10. Create View
+11. Edit View
+12. Index View
+13. Run
+
+Ye pura CRUD hai:
+✅ Insert
+✅ Display
+✅ Update
+✅ Delete
+✅ SQL Server LocalDB
+✅ Entity Framework Core
+✅ ASP.NET Core MVC
