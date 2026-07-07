@@ -1,0 +1,482 @@
+ASP.NET Core MVC + Entity Framework Core — CRUD Application
+(CDAC Lab Exam — Complete Ready-to-Type Solution)
+
+Example used: Employee Management System (Add / View / Edit / Delete Employees)
+You can reuse the exact same pattern for Student, Product, Book, or any other entity asked in the exam — just rename the class and fields.
+
+---
+
+Step 1: Create the Project
+
+In Visual Studio:
+`File → New → Project → ASP.NET Core Web App (Model-View-Controller) → Name it "EmployeeMVCApp" → Framework: .NET 6.0/8.0 → Create`
+
+Or via CLI:
+
+dotnet new mvc -n EmployeeMVCApp
+cd EmployeeMVCApp
+
+
+---
+
+Step 2: Install Required NuGet Packages
+
+Via NuGet Package Manager Console, run:
+
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Install-Package Microsoft.EntityFrameworkCore.Design
+
+Or via .NET CLI:
+
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Microsoft.EntityFrameworkCore.Design
+
+
+---
+
+Step 3: Create the Model — `Models/Employee.cs`
+
+using System.ComponentModel.DataAnnotations;
+
+namespace EmployeeMVCApp.Models
+{
+    public class Employee
+    {
+        [Key]
+        public int EmployeeId { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(50)]
+        public string Name { get; set; }
+
+        [Required]
+        public string Department { get; set; }
+
+        [Range(18, 60, ErrorMessage = "Age must be between 18 and 60")]
+        public int Age { get; set; }
+
+        [Required]
+        [Range(1, double.MaxValue, ErrorMessage = "Salary must be positive")]
+        public double Salary { get; set; }
+    }
+}
+
+
+---
+
+Step 4: Create the DbContext — `Models/ApplicationDbContext.cs`
+
+using Microsoft.EntityFrameworkCore;
+
+namespace EmployeeMVCApp.Models
+{
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Employee> Employees { get; set; }
+    }
+}
+
+
+---
+
+Step 5: Add Connection String — `appsettings.json`
+
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=EmployeeDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+
+Note: In the CDAC lab, if SQL Server Express / LocalDB is installed, this connection string works directly. If a named instance is used, replace `(localdb)\MSSQLLocalDB` with the actual instance name (e.g., `.\SQLEXPRESS`).
+
+---
+
+Step 6: Register DbContext in `Program.cs` (for .NET 6/7/8 minimal hosting model)
+
+using Microsoft.EntityFrameworkCore;
+using EmployeeMVCApp.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Register EF Core DbContext with SQL Server
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Employee}/{action=Index}/{id?}");
+
+app.Run();
+
+
+If your project uses the older `Startup.cs` model (`.NET 5` or Visual Studio template with Startup.cs): add the same `AddDbContext` line inside `ConfigureServices()` in `Startup.cs` instead.
+
+---
+
+Step 7: Create the Database using Migrations
+
+In Package Manager Console (or terminal inside the project folder):
+
+Add-Migration InitialCreate
+Update-Database
+
+Or via CLI:
+
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+
+
+Expected Terminal Output:
+[See terminal screenshot in Word doc]
+
+This creates the `EmployeeDB` database with an `Employees` table matching the model.
+
+---
+
+Step 8: Create the Controller — `Controllers/EmployeeController.cs`
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using EmployeeMVCApp.Models;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace EmployeeMVCApp.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public EmployeeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Employee  --> READ (list all)
+        public async Task<IActionResult> Index()
+        {
+            var employees = await _context.Employees.ToListAsync();
+            return View(employees);
+        }
+
+        // GET: Employee/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
+            if (employee == null) return NotFound();
+
+            return View(employee);
+        }
+
+        // GET: Employee/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Employee/Create  --> CREATE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Employee employee)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(employee);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(employee);
+        }
+
+        // GET: Employee/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null) return NotFound();
+
+            return View(employee);
+        }
+
+        // POST: Employee/Edit/5  --> UPDATE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Employee employee)
+        {
+            if (id != employee.EmployeeId) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(employee);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Employees.Any(e => e.EmployeeId == employee.EmployeeId))
+                        return NotFound();
+                    else
+                        throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(employee);
+        }
+
+        // GET: Employee/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
+            if (employee == null) return NotFound();
+
+            return View(employee);
+        }
+
+        // POST: Employee/Delete/5  --> DELETE
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee != null)
+            {
+                _context.Employees.Remove(employee);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}
+
+
+---
+
+Step 9: Create the Views
+
+Create a folder `Views/Employee/` and add the following Razor views.
+
+9a. `Views/Employee/Index.cshtml`
+
+@model IEnumerable<EmployeeMVCApp.Models.Employee>
+
+<h2>Employee List</h2>
+<p><a asp-action="Create">+ Add New Employee</a></p>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Age</th>
+        <th>Salary</th>
+        <th>Actions</th>
+    </tr>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.EmployeeId</td>
+        <td>@item.Name</td>
+        <td>@item.Department</td>
+        <td>@item.Age</td>
+        <td>@item.Salary</td>
+        <td>
+            <a asp-action="Edit" asp-route-id="@item.EmployeeId">Edit</a> |
+            <a asp-action="Details" asp-route-id="@item.EmployeeId">Details</a> |
+            <a asp-action="Delete" asp-route-id="@item.EmployeeId">Delete</a>
+        </td>
+    </tr>
+}
+</table>
+
+
+9b. `Views/Employee/Create.cshtml`
+
+@model EmployeeMVCApp.Models.Employee
+
+<h2>Add New Employee</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Department"></label>
+        <input asp-for="Department" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Age"></label>
+        <input asp-for="Age" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Salary"></label>
+        <input asp-for="Salary" class="form-control" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+
+9c. `Views/Employee/Edit.cshtml`
+
+@model EmployeeMVCApp.Models.Employee
+
+<h2>Edit Employee</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="EmployeeId" />
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Department"></label>
+        <input asp-for="Department" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Age"></label>
+        <input asp-for="Age" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Salary"></label>
+        <input asp-for="Salary" class="form-control" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+
+9d. `Views/Employee/Details.cshtml`
+
+@model EmployeeMVCApp.Models.Employee
+
+<h2>Employee Details</h2>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">Department</dt>
+        <dd class="col-sm-10">@Model.Department</dd>
+
+        <dt class="col-sm-2">Age</dt>
+        <dd class="col-sm-10">@Model.Age</dd>
+
+        <dt class="col-sm-2">Salary</dt>
+        <dd class="col-sm-10">@Model.Salary</dd>
+    </dl>
+</div>
+<a asp-action="Index">Back to List</a>
+
+
+9e. `Views/Employee/Delete.cshtml`
+
+@model EmployeeMVCApp.Models.Employee
+
+<h2>Delete Employee</h2>
+<h3>Are you sure you want to delete this record?</h3>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">Department</dt>
+        <dd class="col-sm-10">@Model.Department</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="EmployeeId" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+
+---
+
+Step 10: Run the Application
+
+
+dotnet run
+
+or press F5 in Visual Studio.
+
+Navigate to: `https://localhost:xxxx/Employee`
+
+Expected Behavior (walkthrough for the exam demo):
+
+1. Index page opens showing an empty Employee table with an "Add New Employee" link.
+2. Click Add New Employee → fill the Create form (Name, Department, Age, Salary) → click Save → redirected to Index; new row appears.
+3. Click Edit on a row → change a value → click Update → Index reflects the change.
+4. Click Details → shows a read-only view of that record.
+5. Click Delete → confirmation page → click Delete button → record removed from Index list.
+
+Terminal Output When Running:
+[See terminal screenshot in Word doc]
+
+---
+
+Quick Reference — Common Exam Variations
+
+| If asked for... | What changes |
+|---|---|
+| Student CRUD | Rename `Employee` → `Student`; fields: RollNo, Name, Class, Marks |
+| Product CRUD | Fields: ProductId, ProductName, Price, Stock |
+| Book CRUD | Fields: BookId, Title, Author, Price |
+| MySQL instead of SQL Server | Use `Pomelo.EntityFrameworkCore.MySql` package + `UseMySql()` instead of `UseSqlServer()` |
+| Code-First vs Database-First | This solution is Code-First (model → migration → DB). If exam explicitly asks Database-First, use Scaffold-DbContext command instead to reverse-engineer models from an existing DB |
+
+Database-First variant (if specifically asked):
+
+Scaffold-DbContext "Server=(localdb)\MSSQLLocalDB;Database=EmployeeDB;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+
+
+---
+
+Common Errors & Fixes (useful during lab exam)
+
+1. "Cannot open database... login failed" → Check connection string matches installed SQL Server/LocalDB instance name.
+2. "No DbContext was found" while running migrations → Make sure `Program.cs` (or `Startup.cs`) registers `AddDbContext<ApplicationDbContext>` and the migration command is run from the project's root folder.
+3. Validation not firing on Create/Edit forms → Ensure `_ValidationScriptsPartial.cshtml` is referenced (usually already included by default in the MVC template's `_Layout.cshtml` / view).
+4. 404 on running app → Confirm the default route in `Program.cs` points to the correct controller (`{controller=Employee}/{action=Index}/{id?}`), or manually navigate to `/Employee`.
