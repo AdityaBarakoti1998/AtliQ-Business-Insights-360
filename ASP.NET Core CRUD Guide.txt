@@ -1,0 +1,775 @@
+ASP.NET Core CRUD Guide
+This is a copy of a shared ChatGPT conversation
+
+Lekin ek baat clear bol deta hoon: poora ASP.NET Core CRUD project ek reply me dena impossible
+hai kyunki usme 800–1000+ lines hoti hain aur ChatGPT ki response limit usse chhoti hai.
+Isliye hum is order me complete karenge:
+Packages
+appsettings.json
+Product.cs
+ProductContext.cs
+Program.cs
+ProductController.cs
+Index.cshtml
+Create.cshtml
+Edit.cshtml
+Delete.cshtml
+Details.cshtml
+Migration Commands
+Run and Output
+Meri recommendation
+
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+✅
+
+Main tumhare liye Visual Studio 2022 + ASP.NET Core MVC + EF Core + LocalDB ka 100% working
+project taiyar karunga.
+Ye CDAC practical ke liye best rahega, aur baad me tum bas model change karke Student,
+Employee, Book CRUD bhi bana paoge.
+Agar beech me koi compile error aaye, uska screenshot bhej dena. Main usi waqt fix karwa dunga.
+Show moreShow less
+
+Bilkul. Isi tarah karna sabse practical rahega.
+Ek hi reply me poora project dene ki response limit ki wajah se dikkat aati hai. Isliye hum step-by-step
+complete project banayenge, aur har file final, copy-paste ready hogi.
+Hum is order me chalenge:
+
+✅ Required NuGet Packages
+2. ✅
+3. ✅
+4. ✅
+5. ✅
+6. ✅
+7. ✅
+1.
+
+appsettings.json
+
+Models/Product.cs
+
+Data/ProductContext.cs
+Program.cs
+
+Controllers/ProductController.cs
+Views/Product/Index.cshtml
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+1/15
+
+✅
+9. ✅
+10. ✅
+11. ✅
+12. ✅ EF Core Migration Commands
+13. ✅ Run karke Output Verify
+8.
+
+Views/Product/Create.cshtml
+Views/Product/Edit.cshtml
+
+Views/Product/Delete.cshtml
+
+Views/Product/Details.cshtml
+
+Main code is tarah dunga ki:
+Visual Studio 2022 me chale.
+ASP.NET Core MVC + Entity Framework Core + LocalDB use kare.
+Scaffolding ki zarurat na pade.
+Har file complete hogi, kisi line ko guess nahi karna padega.
+Agar compile error aaye, usi file me fix karenge.
+Iske baad tum isi project ka model badal kar Student, Employee, Book, ya kisi bhi entity ka CRUD 5–10
+minute me bana paoge, jo CDAC practical ke liye kaafi useful hoga.
+Chalo shuru karte hain Step 1: Required NuGet Packages.
+yes
+Perfect! Chalo shuru karte hain.
+
+🚀
+
+Step 1: Install Required NuGet Packages
+Visual Studio 2022 me apna project open karo.
+
+Option 1 (Recommended)
+Tools → NuGet Package Manager → Manage NuGet Packages for Solution
+Search karke ye packages install karo:
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+Microsoft.EntityFrameworkCore.Design
+
+Agar tum LocalDB use kar rahe ho (jo Visual Studio ke saath aata hai), to SQLite package ki
+zarurat nahi hai.
+
+Option 2 (Package Manager Console)
+Tools → NuGet Package Manager → Package Manager Console
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+2/15
+
+Ye commands run karo:
+PowerShell
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+
+PowerShell
+Install-Package Microsoft.EntityFrameworkCore.Tools
+
+PowerShell
+Install-Package Microsoft.EntityFrameworkCore.Design
+
+Verify
+Project ke Dependencies → Packages me ye 3 packages dikhne chahiye:
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+Microsoft.EntityFrameworkCore.Design
+
+Project Structure
+Ab tak project kuch is tarah dikhega:
+ProductCRUD
+│
+├── Controllers
+├── Models
+├── Views
+├── wwwroot
+├── appsettings.json
+├── Program.cs
+└── ProductCRUD.csproj
+
+✅ Step 2 (Next)
+Agle message me hum appsettings.json aur Product.cs banayenge.
+Isse database connection aur model dono ready ho jayenge. Phir hum ProductContext, Program.cs,
+Controller aur saare Razor Views banayenge.
+yes
+Great! Ab Step 2 karte hain.
+
+1. appsettings.json
+Project me jo appsettings.json file hai, uska content poora replace kar do.
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+3/15
+
+JSON
+{
+
+"ConnectionStrings": {
+"DefaultConnection": "Server=
+(localdb)\\MSSQLLocalDB;Database=ProductDB;Trusted_Connection=True;MultipleActiveResultSets=true;T
+rustServerCertificate=True"
+},
+"Logging": {
+"LogLevel": {
+"Default": "Information",
+"Microsoft.AspNetCore": "Warning"
+}
+},
+}
+
+"AllowedHosts": "*"
+
+Important: Is file me extra {} ya , (comma) nahi hona chahiye. JSON format bilkul isi tarah
+hona chahiye.
+
+2. Models Folder
+Project me Models folder par right-click karo.
+Add → Class
+Class ka naam do:
+Product.cs
+
+3. Product.cs
+Poora code paste karo:
+C#
+using System.ComponentModel.DataAnnotations;
+namespace ProductCRUD.Models
+{
+public class Product
+{
+public int Id { get; set; }
+[Required(ErrorMessage = "Product Name is required")]
+[StringLength(100)]
+public string Name { get; set; }
+[Required(ErrorMessage = "Price is required")]
+[Range(1, 100000)]
+public decimal Price { get; set; }
+
+}
+
+}
+
+[Required(ErrorMessage = "Quantity is required")]
+[Range(1, 1000)]
+public int Quantity { get; set; }
+
+⚠️ Agar project ka naam
+
+ProductCRUD nahi hai
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+4/15
+
+Agar tumhare project ka naam, maan lo:
+MVCProduct
+
+to ye line:
+C#
+namespace ProductCRUD.Models
+
+badal kar:
+C#
+namespace MVCProduct.Models
+
+kar dena.
+Namespace hamesha project name ke according hona chahiye.
+
+Project Structure ab
+ProductCRUD
+│
+├── Controllers
+├── Models
+│
+└── Product.cs
+├── Views
+├── wwwroot
+├── appsettings.json
+└── Program.cs
+
+✅ Agla Step
+Next message me hum banayenge:
+Data/ProductContext.cs
+Program.cs
+
+Uske baad project database se connect ho jayega aur migration ke liye ready hoga.
+yes
+Perfect!
+
+👍 Ab Step 3 karte hain.
+
+1. Data Folder Banaye
+Project par Right Click → Add → New Folder
+Folder ka naam rakho:
+Data
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+5/15
+
+2. Data Folder me Class Add Karo
+Right Click Data → Add → Class
+Naam do:
+ProductContext.cs
+
+3. ProductContext.cs
+Poora code paste karo:
+C#
+using Microsoft.EntityFrameworkCore;
+using ProductCRUD.Models;
+namespace ProductCRUD.Data
+{
+public class ProductContext : DbContext
+{
+public ProductContext(DbContextOptions<ProductContext> options)
+: base(options)
+{
+}
+
+}
+
+}
+
+public DbSet<Product> Products { get; set; }
+
+Note: Agar tumhare project ka naam ProductCRUD nahi hai, to ProductCRUD.Models aur
+ProductCRUD.Data ko apne project ke namespace ke hisab se change kar dena.
+
+4. Program.cs
+Ab Program.cs ko poora replace kar do.
+C#
+using Microsoft.EntityFrameworkCore;
+using ProductCRUD.Data;
+var builder = WebApplication.CreateBuilder(args);
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+// Register DbContext
+builder.Services.AddDbContext<ProductContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var app = builder.Build();
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+app.UseExceptionHandler("/Home/Error");
+app.UseHsts();
+}
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+6/15
+
+app.UseRouting();
+app.UseAuthorization();
+app.MapControllerRoute(
+name: "default",
+pattern: "{controller=Product}/{action=Index}/{id?}");
+app.Run();
+
+5. Check These Namespaces
+Project me ye files honi chahiye:
+ProductCRUD
+│
+├── Controllers
+├── Data
+│
+└── ProductContext.cs
+├── Models
+│
+└── Product.cs
+├── Views
+├── appsettings.json
+└── Program.cs
+
+⚠️ Agar
+
+UseSqlServer() par error aaye
+
+To iska matlab Microsoft.EntityFrameworkCore.SqlServer package install nahi hua hai.
+Package Manager Console me run karo:
+PowerShell
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+
+Aur agar AddDbContext() ya DbContext par error aaye, to install karo:
+PowerShell
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Install-Package Microsoft.EntityFrameworkCore.Design
+
+✅ Agla Step
+Ab hum ProductController.cs manually likhenge (Scaffolding ki zarurat nahi hogi). Isme Index, Create,
+Edit, Delete aur Details ke saare actions honge. Uske baad Razor Views banayenge aur project
+complete ho jayega.
+yes
+Perfect!
+
+🚀 Ab hum Step 4 karte hain.
+
+ProductController.cs ka code kaafi lamba hai (100+ lines), aur uske baad 5 Razor Views bhi hain. Ek hi
+
+reply me sab nahi aa payega, isliye pehle controller complete karte hain.
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+7/15
+
+Create Controller
+Controllers folder par Right Click → Add → Class
+Class ka naam do:
+ProductController.cs
+
+ProductController.cs (Complete)
+C#
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProductCRUD.Data;
+using ProductCRUD.Models;
+namespace ProductCRUD.Controllers
+{
+public class ProductController : Controller
+{
+private readonly ProductContext _context;
+public ProductController(ProductContext context)
+{
+_context = context;
+}
+// Display All Products
+public async Task<IActionResult> Index()
+{
+return View(await _context.Products.ToListAsync());
+}
+// Display Details
+public async Task<IActionResult> Details(int? id)
+{
+if (id == null)
+return NotFound();
+var product = await _context.Products
+.FirstOrDefaultAsync(p => p.Id == id);
+if (product == null)
+return NotFound();
+}
+
+return View(product);
+
+// GET: Create
+public IActionResult Create()
+{
+return View();
+}
+// POST: Create
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(Product product)
+{
+if (ModelState.IsValid)
+{
+_context.Add(product);
+await _context.SaveChangesAsync();
+return RedirectToAction(nameof(Index));
+}
+}
+
+return View(product);
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+8/15
+
+// GET: Edit
+public async Task<IActionResult> Edit(int? id)
+{
+if (id == null)
+return NotFound();
+var product = await _context.Products.FindAsync(id);
+if (product == null)
+return NotFound();
+}
+
+return View(product);
+
+// POST: Edit
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Edit(int id, Product product)
+{
+if (id != product.Id)
+return NotFound();
+if (ModelState.IsValid)
+{
+_context.Update(product);
+await _context.SaveChangesAsync();
+return RedirectToAction(nameof(Index));
+}
+}
+
+return View(product);
+
+// GET: Delete
+public async Task<IActionResult> Delete(int? id)
+{
+if (id == null)
+return NotFound();
+var product = await _context.Products
+.FirstOrDefaultAsync(p => p.Id == id);
+if (product == null)
+return NotFound();
+}
+
+return View(product);
+
+// POST: Delete
+[HttpPost, ActionName("Delete")]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteConfirmed(int id)
+{
+var product = await _context.Products.FindAsync(id);
+if (product != null)
+{
+_context.Products.Remove(product);
+await _context.SaveChangesAsync();
+}
+
+}
+
+}
+
+}
+
+return RedirectToAction(nameof(Index));
+
+✅ Check
+Ab project structure:
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+9/15
+
+ProductCRUD
+│
+├── Controllers
+│
+└── ProductController.cs
+├── Data
+│
+└── ProductContext.cs
+├── Models
+│
+└── Product.cs
+├── Views
+├── Program.cs
+└── appsettings.json
+
+📌 Next Step
+Ab sirf Views bache hain:
+
+✅
+✅
+✅
+✅
+✅
+
+Index.cshtml
+Create.cshtml
+Edit.cshtml
+Delete.cshtml
+Details.cshtml
+
+Uske baad:
+EF Core Migration
+Database Create
+Project Run
+CRUD Demo
+Ye project uske baad 100% complete ho jayega.
+Perfect! Ab Create.cshtml banate hain.
+
+📁 Views → Product → Create.cshtml
+Views → Product folder me Create.cshtml file banao aur ye code paste karo.
+cshtml
+@model ProductCRUD.Models.Product
+@{
+}
+
+ViewData["Title"] = "Create Product";
+
+<h2>Create Product</h2>
+<hr />
+<div class="row">
+<div class="col-md-4">
+<form asp-action="Create">
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+10/15
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="form-group mb-3">
+<label asp-for="Name" class="form-label"></label>
+<input asp-for="Name" class="form-control" />
+<span asp-validation-for="Name" class="text-danger"></span>
+</div>
+<div class="form-group mb-3">
+<label asp-for="Price" class="form-label"></label>
+<input asp-for="Price" class="form-control" />
+<span asp-validation-for="Price" class="text-danger"></span>
+</div>
+<div class="form-group mb-3">
+<label asp-for="Quantity" class="form-label"></label>
+<input asp-for="Quantity" class="form-control" />
+<span asp-validation-for="Quantity" class="text-danger"></span>
+</div>
+<input type="submit" value="Create" class="btn btn-success" />
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
+</div>
+</div>
+@section Scripts
+{
+@{
+await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}
+
+✅ Ab Project Structure
+Views
+└── Product
+├── Index.cshtml
+└── Create.cshtml
+
+🎯 Next Message
+Main dunga:
+
+✅
+✅
+✅
+
+Edit.cshtml
+Delete.cshtml
+Details.cshtml
+
+Uske baad sirf migration commands chalani hongi aur project run ho jayega.
+yes
+Perfect!
+
+🚀 Ab Edit.cshtml complete karte hain.
+
+📁 Views → Product → Edit.cshtml
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+11/15
+
+cshtml
+@model ProductCRUD.Models.Product
+@{
+}
+
+ViewData["Title"] = "Edit Product";
+
+<h2>Edit Product</h2>
+<hr />
+<div class="row">
+<div class="col-md-4">
+<form asp-action="Edit">
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
+<div class="form-group mb-3">
+<label asp-for="Name" class="form-label"></label>
+<input asp-for="Name" class="form-control" />
+<span asp-validation-for="Name" class="text-danger"></span>
+</div>
+<div class="form-group mb-3">
+<label asp-for="Price" class="form-label"></label>
+<input asp-for="Price" class="form-control" />
+<span asp-validation-for="Price" class="text-danger"></span>
+</div>
+<div class="form-group mb-3">
+<label asp-for="Quantity" class="form-label"></label>
+<input asp-for="Quantity" class="form-control" />
+<span asp-validation-for="Quantity" class="text-danger"></span>
+</div>
+<input type="submit" value="Update" class="btn btn-primary" />
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
+</div>
+</div>
+@section Scripts
+{
+@{
+await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}
+
+✅ Agle Reply me
+
+Main Delete.cshtml aur Details.cshtml dunga.
+Uske baad:
+
+✅ Migration Commands
+✅ Database Create
+✅ Project Run
+✅ Final Output
+
+Aur tumhara ASP.NET Core MVC CRUD project complete ho jayega.
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+12/15
+
+yes
+Excellent!
+
+🎉 Chalo Delete.cshtml aur Details.cshtml complete karte hain.
+
+📁 Views → Product → Delete.cshtml
+cshtml
+@model ProductCRUD.Models.Product
+@{
+}
+
+ViewData["Title"] = "Delete Product";
+
+<h2>Delete Product</h2>
+<h4>Are you sure you want to delete this product?</h4>
+<hr />
+<dl class="row">
+<dt class="col-sm-2">Name</dt>
+<dd class="col-sm-10">@Model.Name</dd>
+<dt class="col-sm-2">Price</dt>
+<dd class="col-sm-10">@Model.Price</dd>
+<dt class="col-sm-2">Quantity</dt>
+<dd class="col-sm-10">@Model.Quantity</dd>
+</dl>
+<form asp-action="Delete">
+<input type="hidden" asp-for="Id" />
+<input type="submit" value="Delete" class="btn btn-danger" />
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
+
+📁 Views → Product → Details.cshtml
+cshtml
+@model ProductCRUD.Models.Product
+@{
+}
+
+ViewData["Title"] = "Product Details";
+
+<h2>Product Details</h2>
+<hr />
+<dl class="row">
+<dt class="col-sm-2">Id</dt>
+<dd class="col-sm-10">@Model.Id</dd>
+<dt class="col-sm-2">Name</dt>
+<dd class="col-sm-10">@Model.Name</dd>
+<dt class="col-sm-2">Price</dt>
+<dd class="col-sm-10">@Model.Price</dd>
+<dt class="col-sm-2">Quantity</dt>
+<dd class="col-sm-10">@Model.Quantity</dd>
+</dl>
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+13/15
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+Edit
+</a>
+<a asp-action="Index" class="btn btn-secondary">
+Back to List
+</a>
+
+✅ Step 6: Create Database (Migration)
+Visual Studio me:
+Tools → NuGet Package Manager → Package Manager Console
+Commands run karo:
+PowerShell
+Add-Migration InitialCreate
+
+Migration successful hone ke baad:
+PowerShell
+Update-Database
+
+Agar sab sahi hua, to ProductDB database create ho jayega aur Products table ban jayegi.
+
+▶️ Run Project
+Press F5 ya Ctrl + F5
+Browser me open hoga:
+https://localhost:xxxx/Product
+
+Yahan tum:
+
+✅ Add Product
+✅ View Products
+✅ Edit Product
+✅ Delete Product
+✅ View Details
+
+sab perform kar paoge.
+
+🎉 Congratulations!
+Tumhara ASP.NET Core MVC + Entity Framework Core + LocalDB CRUD Project complete ho gaya.
+
+Agar Add-Migration ya Update-Database me koi error aaye:
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+14/15
+
+Mujhe error ka screenshot ya poora error text bhej dena. Main line-by-line fix karwa dunga.
+
+Printed using ChatGPT to PDF, powered by PDFCrowd HTML to PDF API.
+
+15/15
+
+
